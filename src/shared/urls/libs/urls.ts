@@ -15,7 +15,7 @@ export const URLS = {
     listUsers: 'usuarios',
     updateUsers: 'usuario/:id',
     searchUsers: 'usuario/:id',
-    searchUsersByEmail: 'usuario/:email',
+    searchUsersByEmail: 'usuario-correo/:email',
     ////////////////////////////////////////
 
 

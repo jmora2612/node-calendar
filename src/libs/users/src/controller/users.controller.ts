@@ -1,14 +1,13 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
   Param,
   Post,
   Put,
   Query,
   Res,
-  Request,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -25,18 +24,19 @@ import {
   UsersUpdateValidation,
   UsersValidation,
 } from '../validations/UsersValidation';
+import { AuthGuard } from 'src/shared/guard/calendar-guard.guard';
 
 @ApiTags('Users')
 @Controller()
 export class UsersController {
-  constructor(private readonly authService: UsersService) {}
+  constructor(private readonly usersService: UsersService) {}
 
   @ApiOperation({})
   @ApiBody({ type: UsersValidation })
   @Post(URLS.createUsers)
-  async create(@Body() createdAuth: UsersValidation, @Res() res: Response) {
-    await this.authService
-      .create(createdAuth)
+  async create(@Body() createdUsers: UsersValidation, @Res() res: Response) {
+    await this.usersService
+      .create(createdUsers)
       .then((result: any) => {
         const response = {
           status: 'success',
@@ -54,12 +54,13 @@ export class UsersController {
       });
   }
 
-  @ApiBearerAuth('JWT-auth')
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth('JWT-authenticate')
   @Get(URLS.listUsers)
   @ApiQuery({ name: 'name', required: false, type: String })
   @ApiQuery({ name: 'email', required: false, type: String })
-  async getAuth(@Query() request, @Res() res: Response) {
-    await this.authService
+  async getUsers(@Query() request, @Res() res: Response) {
+    await this.usersService
       .findAll(request)
       .then((result) => {
         const response = {
@@ -77,7 +78,8 @@ export class UsersController {
       });
   }
 
-  @ApiBearerAuth('JWT-auth')
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth('JWT-authenticate')
   @ApiOperation({})
   @ApiBody({ type: UsersUpdateValidation })
   @Put(URLS.updateUsers)
@@ -86,7 +88,7 @@ export class UsersController {
     @Body() updateValidation: UsersUpdateValidation,
     @Res() res: Response,
   ) {
-    await this.authService
+    await this.usersService
       .update(_id, updateValidation)
       .then((result: any) => {
         const response = {
@@ -105,10 +107,12 @@ export class UsersController {
       });
   }
 
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth('JWT-authenticate')
   @ApiOperation({})
   @Get(URLS.searchUsers)
   async findOne(@Param('id') _id: string, @Res() res: Response) {
-    await this.authService
+    await this.usersService
       .findOne(_id)
       .then((result: any) => {
         const response = {
@@ -129,7 +133,7 @@ export class UsersController {
 
   @Get(URLS.searchUsersByEmail)
   async findUserByEmail(@Param('email') email: string, @Res() res: Response) {
-    await this.authService
+    await this.usersService
       .findUserByEmail(email)
       .then((result: any) => {
         const response = {
