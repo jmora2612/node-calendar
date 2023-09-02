@@ -1,0 +1,34 @@
+{
+  "projects": {
+    "auth": {
+      "type": "library",
+      "root": "libs/auth",
+      "entryFile": "index",
+      "sourceRoot": "libs/auth/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/auth/tsconfig.lib.json"
+      }
+    },
+    "calendar": {
+      "type": "library",
+      "root": "libs/calendar",
+      "entryFile": "index",
+      "sourceRoot": "libs/calendar/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/calendar/tsconfig.lib.json"
+      }
+    },
+    "users": {
+      "type": "library",
+      "root": "libs/users",
+      "entryFile": "index",
+      "sourceRoot": "libs/users/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/users/tsconfig.lib.json"
+      }
+    }
+  },
+  "compilerOptions": {
+    "webpack": true
+  }
+}
