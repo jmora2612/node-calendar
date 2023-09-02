@@ -1,6 +1,8 @@
 import {
   IsBoolean,
+  IsDate,
   IsNotEmpty,
+  IsNumber,
   IsString,
   MaxLength,
   MinLength,
@@ -9,44 +11,63 @@ import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { calendarDTO } from 'src/shared/dtos/libs/calendarDTO';
 
 /**
- * @method AuthValidation()
+ * @method CalendarValidation()
  * Este Dto, es el encargado de validar el registro o creacion de la aplicacion
  */
 
-export class AuthValidation extends PartialType(calendarDTO) {
+export class CalendarValidation extends PartialType(calendarDTO) {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  @MaxLength(1000)
-  @MinLength(5)
-  name: string;
+  @MaxLength(20)
+  @MinLength(2)
+  title: string;
 
   @ApiProperty()
   @IsNotEmpty()
+  @MaxLength(500)
+  @MinLength(2)
   @IsString()
-  email: string;
+  notes: string;
 
   @ApiProperty()
   @IsNotEmpty()
+  @IsDate()
+  start: Date;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsDate()
+  end: Date;
+
+  @ApiProperty()
   @IsString()
-  password: string;
+  @IsNotEmpty()
+  user: string;
 }
 
-export class AuthUpdateValidation extends PartialType(calendarDTO) {
+export class CalendarUpdateValidation extends PartialType(calendarDTO) {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  @MaxLength(1000)
-  @MinLength(5)
-  name: string;
+  @MaxLength(20)
+  @MinLength(2)
+  title: string;
 
   @ApiProperty()
   @IsNotEmpty()
+  @MaxLength(500)
+  @MinLength(2)
   @IsString()
-  email: string;
+  notes: string;
 
   @ApiProperty()
   @IsNotEmpty()
-  @IsString()
-  password: string;
+  @IsDate()
+  start: Date;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsDate()
+  end: Date;
 }

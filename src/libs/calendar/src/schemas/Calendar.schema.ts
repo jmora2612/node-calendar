@@ -11,13 +11,22 @@ export class Calendar {
   _id: mongoose.Schema.Types.ObjectId;
 
   @Prop({ required: true, type: String })
-  name: string;
+  title: string;
 
   @Prop({ required: true, type: String })
-  email: string;
+  notes: string;
 
-  @Prop({ required: true, type: String })
-  password: string;
+  @Prop({ required: true, type: Date })
+  start: Date;
+
+  @Prop({ required: true, type: Date })
+  end: Date;
+
+  // @Prop({ required: true, type: String })
+  // bgColor: string;
+
+  @Prop({ type: mongoose.Types.ObjectId, required: true, index: true })
+  user: mongoose.Types.ObjectId;
 
   @Prop({ default: Date.now })
   createdAt: Date;
