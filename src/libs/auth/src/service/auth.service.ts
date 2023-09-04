@@ -22,7 +22,10 @@ export class AuthService {
 
     if (!validPassword) throw 'Contraseña incorrecta';
 
-    const token = await this.createToken(findUsers).catch((error) => {
+    const token = await this.createToken({
+      _id: findUsers._id,
+      name: findUsers.name,
+    }).catch((error) => {
       throw { error, status: HttpStatus.BAD_REQUEST };
     });
 
@@ -34,28 +37,33 @@ export class AuthService {
   };
 
   createToken = async (payload) => {
-    const payloadToJson = payload.toJSON();
-    delete payloadToJson.password;
-
-    const access_token = this.jwtService.sign(payloadToJson, {
+    const access_token = this.jwtService.sign(payload, {
       expiresIn: '2h',
     });
 
-    return { access_token, user: payloadToJson };
+    return { access_token, user: payload };
   };
 
-  refreshToken = async (payload) => {
-    try {
-      const access_token = this.jwtService.sign(payload, {
-        expiresIn: '24h',
-      });
-      if (!access_token) {
-        throw new Error();
-      }
-
-      return { access_token };
-    } catch (err) {
-      return err;
+  refreshToken = async (headers) => {
+    const authorizationHeader = headers.authorization;
+    if (!authorizationHeader) {
+      throw 'No se proporcionó el token JWT.';
     }
+    const token = authorizationHeader.replace('Bearer ', '');
+    const decodedToken = this.jwtService.verify(token);
+    const access_token = this.jwtService.sign(
+      {
+        _id: decodedToken._id,
+        name: decodedToken.name,
+      },
+      {
+        expiresIn: '2h',
+      },
+    );
+    return {
+      token: access_token,
+      uid: decodedToken._id,
+      name: decodedToken.name,
+    };
   };
 }

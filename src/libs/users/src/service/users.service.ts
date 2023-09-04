@@ -24,9 +24,18 @@ export class UsersService {
     if (findOne?.email === email) throw 'Ya existe un registro con este email.';
 
     const saveUser = await new this.usersModel(users).save();
-    return await this.createToken(saveUser).catch((error) => {
+    const token = await this.createToken({
+      _id: saveUser._id,
+      name: saveUser.name,
+    }).catch((error) => {
       throw { error, status: HttpStatus.BAD_REQUEST };
     });
+
+    return {
+      uid: token.user._id,
+      name: token.user.name,
+      token: token.access_token,
+    };
   }
 
   async findAll(request) {
@@ -85,18 +94,15 @@ export class UsersService {
     return findUsers
       ? findUsers
       : (() => {
-          throw 'El registro solicitado no existe.';
+          throw 'El correo ingresado no existe.';
         })();
   }
 
   async createToken(payload) {
-    const payloadToJson = payload.toJSON();
-    delete payloadToJson.password;
-
-    const access_token = this.jwtService.sign(payloadToJson, {
+    const access_token = this.jwtService.sign(payload, {
       expiresIn: '2h',
     });
 
-    return { access_token, user: payloadToJson };
+    return { access_token, user: payload };
   }
 }

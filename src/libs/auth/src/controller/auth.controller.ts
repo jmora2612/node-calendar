@@ -1,9 +1,18 @@
-import { Body, Controller, Post, Res } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Post,
+  Res,
+  Headers,
+  Get,
+  UseGuards,
+} from '@nestjs/common';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { LoginValidation } from '../validations/AuthValidation';
 import { Response } from 'express';
 import { URLS } from 'src/shared/urls/libs/urls';
 import { AuthService } from '../service/auth.service';
+import { AuthGuard } from 'src/shared/guard/calendar-guard.guard';
 
 @ApiTags('Auth')
 @Controller()
@@ -32,13 +41,15 @@ export class AuthController {
       });
   }
 
-  @Post(URLS.refreshToken)
-  async refreshToken(@Body() login: LoginValidation, @Res() res: Response) {
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth('JWT-authenticate')
+  @Get(URLS.refreshToken)
+  async refreshToken(@Headers() headers, @Res() res: Response) {
     await this.authService
-      .refreshToken(login)
-      .then((result: any) => {
+      .refreshToken(headers)
+      .then((result) => {
         const response = {
-          status: 'success',
+          status: 'Registro exitoso',
           data: result,
           message: 'Refresh del token exitoso.',
         };
