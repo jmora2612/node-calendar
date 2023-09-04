@@ -22,7 +22,7 @@ export class AuthGuard implements CanActivate {
       const message =
         error.name === 'TokenExpiredError'
           ? 'Session expirada'
-          : 'No autorizado';
+          : 'Usuario no autorizado';
       throw new HttpException(message, HttpStatus.UNAUTHORIZED);
     }
   }

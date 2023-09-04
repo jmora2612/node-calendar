@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { calendarDTO } from 'src/shared/dtos/libs/calendarDTO';
 import { Calendar } from '../schemas/Calendar.schema';
 import mongoose, { Model } from 'mongoose';
+import { IsMongoId } from 'class-validator';
 @Injectable()
 export class CalendarService {
   constructor(
@@ -81,5 +82,47 @@ export class CalendarService {
       Object.assign(find, { _id: { $ne: id } });
     }
     return await this.calendarModel.findOne(find);
+  }
+
+  async findAll(user) {
+    const aggregate = [
+      {
+        $match: {
+          user: new mongoose.Types.ObjectId(user),
+        },
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'user',
+          foreignField: '_id',
+          as: 'user',
+        },
+      },
+      {
+        $unwind: '$user',
+      },
+      {
+        $project: {
+          title: 1,
+          notes: 1,
+          start: 1,
+          end: 1,
+          users: { _id: '$user._id', name: '$user.name' },
+        },
+      },
+    ];
+
+    const findProducts = await this.calendarModel.aggregate(aggregate);
+
+    return findProducts.length
+      ? findProducts
+      : (() => {
+          throw 'No hay eventos disponibles.';
+        })();
+  }
+
+  async deleteCalendarEvent(_id) {
+    return await this.calendarModel.deleteOne(new mongoose.Types.ObjectId(_id));
   }
 }

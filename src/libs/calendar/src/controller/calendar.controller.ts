@@ -33,8 +33,8 @@ import { AuthGuard } from 'src/shared/guard/calendar-guard.guard';
 export class CalendarController {
   constructor(private readonly calendarService: CalendarService) {}
 
-  // @UseGuards(AuthGuard)
-  // @ApiBearerAuth('JWT-authenticate')
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth('JWT-authenticate')
   @ApiOperation({})
   @ApiBody({ type: CalendarValidation })
   @Post(URLS.createCalendar)
@@ -61,8 +61,8 @@ export class CalendarController {
       });
   }
 
-  // @UseGuards(AuthGuard)
-  // @ApiBearerAuth('JWT-authenticate')
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth('JWT-authenticate')
   @ApiOperation({})
   @ApiBody({ type: CalendarUpdateValidation })
   @Put(URLS.updateCalendar)
@@ -78,6 +78,52 @@ export class CalendarController {
           status: 'success',
           data: result,
           message: 'Evento actualizado de forma exitosa.',
+        };
+        res.status(200).send(response);
+      })
+      .catch((error) => {
+        const response = {
+          status: 'error',
+          message: error,
+        };
+        res.status(500).send(response);
+      });
+  }
+
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth('JWT-authenticate')
+  @ApiOperation({})
+  @Get(URLS.listCalendar)
+  async getCalendarEvent(@Param('user') user: string, @Res() res: Response) {
+    await this.calendarService
+      .findAll(user)
+      .then((result) => {
+        const response = {
+          status: 'success',
+          data: result,
+          message: 'Evento eliminado de forma exitosa.',
+        };
+        res.status(200).send(response);
+      })
+      .catch((error) => {
+        const response = {
+          status: 'error',
+          message: error,
+        };
+        res.status(500).send(response);
+      });
+  }
+
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth('JWT-authenticate')
+  @Delete(URLS.deleteCalendar)
+  async deleteCalendarEvent(@Param('id') _id: string, @Res() res: Response) {
+    await this.calendarService
+      .deleteCalendarEvent(_id)
+      .then((result) => {
+        const response = {
+          status: 'success',
+          data: result,
         };
         res.status(200).send(response);
       })

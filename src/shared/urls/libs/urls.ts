@@ -21,11 +21,11 @@ export const URLS = {
 
     ///////calendario///////////////////////
   
-    createCalendar: 'calendario',
-    listCalendar: 'calendarios',
-    updateCalendar: 'calendario/:id',
-    searchCalendar: 'calendario/:id',
-  
+    createCalendar: 'calendario-event',
+    listCalendar: 'calendarios-event/:user',
+    updateCalendar: 'calendario-event/:id',
+    deleteCalendar: 'calendario-event/:id',
+
     ////////////////////////////////////////
   };
   
