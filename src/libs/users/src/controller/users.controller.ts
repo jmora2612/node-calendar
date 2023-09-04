@@ -131,6 +131,8 @@ export class UsersController {
       });
   }
 
+  @ApiBearerAuth('JWT-authenticate')
+  @ApiOperation({})
   @Get(URLS.searchUsersByEmail)
   async findUserByEmail(@Param('email') email: string, @Res() res: Response) {
     await this.usersService

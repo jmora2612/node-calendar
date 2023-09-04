@@ -70,9 +70,10 @@ export class CalendarController {
     @Param('id') _id: string,
     @Body() updateValidation: CalendarUpdateValidation,
     @Res() res: Response,
+    @Request() req,
   ) {
     await this.calendarService
-      .update(_id, updateValidation)
+      .update(_id, updateValidation, req)
       .then((result: any) => {
         const response = {
           status: 'success',
@@ -117,9 +118,13 @@ export class CalendarController {
   @UseGuards(AuthGuard)
   @ApiBearerAuth('JWT-authenticate')
   @Delete(URLS.deleteCalendar)
-  async deleteCalendarEvent(@Param('id') _id: string, @Res() res: Response) {
+  async deleteCalendarEvent(
+    @Param('id') _id: string,
+    @Res() res: Response,
+    @Request() req,
+  ) {
     await this.calendarService
-      .deleteCalendarEvent(_id)
+      .deleteCalendarEvent(_id, req)
       .then((result) => {
         const response = {
           status: 'success',

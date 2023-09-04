@@ -26,7 +26,7 @@ export class CalendarService {
     return await new this.calendarModel(data).save();
   }
 
-  async update(id, calendar: calendarDTO) {
+  async update(id, calendar: calendarDTO, req) {
     const { start, end, user } = calendar;
     calendar.start = new Date(start);
     calendar.end = new Date(end);
@@ -37,6 +37,11 @@ export class CalendarService {
     });
 
     if (findOne) {
+      const idUser = findOne.user.toString();
+
+      if (req.user._id !== idUser)
+        throw 'No tiene privilegio de editar este evento';
+
       const findOneDate = await this.findOneDate(
         findOne.user,
         newDate,
@@ -50,38 +55,6 @@ export class CalendarService {
         .findByIdAndUpdate(id, calendar, { new: true })
         .exec();
     }
-  }
-
-  async findOneDate(user, newDate, newDateEnd, id?) {
-    const find = {
-      user: user,
-      $or: [
-        {
-          $and: [
-            { start: { $lte: newDate }, end: { $gte: newDate } },
-            { start: { $lte: newDateEnd }, end: { $gte: newDateEnd } },
-          ],
-        },
-        {
-          $and: [
-            { start: { $lte: newDate }, end: { $gte: newDate } },
-            { start: { $lte: newDateEnd }, end: { $lte: newDateEnd } },
-            { end: { $gte: newDate } },
-          ],
-        },
-        {
-          $and: [
-            { start: { $gte: newDate }, end: { $lte: newDate } },
-            { start: { $lte: newDateEnd }, end: { $gte: newDateEnd } },
-          ],
-        },
-      ],
-    };
-
-    if (id) {
-      Object.assign(find, { _id: { $ne: id } });
-    }
-    return await this.calendarModel.findOne(find);
   }
 
   async findAll(user) {
@@ -122,7 +95,49 @@ export class CalendarService {
         })();
   }
 
-  async deleteCalendarEvent(_id) {
-    return await this.calendarModel.deleteOne(new mongoose.Types.ObjectId(_id));
+  async deleteCalendarEvent(_id, req) {
+    const findOne = await this.calendarModel.findOne({
+      _id: new mongoose.Types.ObjectId(_id),
+    });
+    if (findOne) {
+      const idUser = findOne.user.toString();
+      if (req.user._id !== idUser)
+        throw 'No tiene privilegio de eliminar este evento';
+      return await this.calendarModel.deleteOne(
+        new mongoose.Types.ObjectId(_id),
+      );
+    }
+  }
+
+  async findOneDate(user, newDate, newDateEnd, id?) {
+    const find = {
+      user: user,
+      $or: [
+        {
+          $and: [
+            { start: { $lte: newDate }, end: { $gte: newDate } },
+            { start: { $lte: newDateEnd }, end: { $gte: newDateEnd } },
+          ],
+        },
+        {
+          $and: [
+            { start: { $lte: newDate }, end: { $gte: newDate } },
+            { start: { $lte: newDateEnd }, end: { $lte: newDateEnd } },
+            { end: { $gte: newDate } },
+          ],
+        },
+        {
+          $and: [
+            { start: { $gte: newDate }, end: { $lte: newDate } },
+            { start: { $lte: newDateEnd }, end: { $gte: newDateEnd } },
+          ],
+        },
+      ],
+    };
+
+    if (id) {
+      Object.assign(find, { _id: { $ne: id } });
+    }
+    return await this.calendarModel.findOne(find);
   }
 }

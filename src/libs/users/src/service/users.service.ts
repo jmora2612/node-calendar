@@ -21,14 +21,12 @@ export class UsersService {
 
     users.password = bcrypt.hashSync(password, salt);
 
-    if (findOne) {
-      throw 'Ya existe un registro con este nombre o descripcion.';
-    } else {
-      const saveUser = await new this.usersModel(users).save();
-      return await this.createToken(saveUser).catch((error) => {
-        throw { error, status: HttpStatus.BAD_REQUEST };
-      });
-    }
+    if (findOne?.email === email) throw 'Ya existe un registro con este email.';
+
+    const saveUser = await new this.usersModel(users).save();
+    return await this.createToken(saveUser).catch((error) => {
+      throw { error, status: HttpStatus.BAD_REQUEST };
+    });
   }
 
   async findAll(request) {
@@ -51,10 +49,18 @@ export class UsersService {
   }
 
   async update(id, users: usersDTO) {
+    const { name, email, password } = users;
     const findOne = await this.usersModel.findOne({ _id: id });
     const salt = bcrypt.genSaltSync();
     users = { ...users, password: bcrypt.hashSync(users.password, salt) };
     if (findOne) {
+      const findOneUsers = await this.usersModel.findOne({
+        $or: [{ name }, { email }],
+        _id: { $ne: id },
+      });
+
+      if (findOneUsers?.email === users.email)
+        throw 'Ya existe un registro con este email.';
       return await this.usersModel
         .findByIdAndUpdate(id, users, { new: true })
         .exec();
