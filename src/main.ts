@@ -5,6 +5,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 const port = process.env.PORT;
 async function bootstrap() {
+  process.env.TZ = 'America/Caracas';
   const app = await NestFactory.create(AppModule);
   app.enableCors({
     origin: '*',
@@ -30,7 +31,7 @@ async function bootstrap() {
     .build();
   const authDocument = SwaggerModule.createDocument(app, authOptions);
   SwaggerModule.setup('calendar-api', app, authDocument);
-
+  
   await app.listen(port);
 }
 

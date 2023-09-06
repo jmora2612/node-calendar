@@ -32,7 +32,7 @@ export class UsersService {
     });
 
     return {
-      uid: token.user._id,
+      _id: token.user._id,
       name: token.user.name,
       token: token.access_token,
     };

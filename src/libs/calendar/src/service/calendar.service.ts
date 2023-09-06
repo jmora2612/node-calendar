@@ -16,12 +16,12 @@ export class CalendarService {
     data.start = new Date(start);
     data.end = new Date(end);
 
-    const newDate = new Date(data.start);
-    const newDateEnd = new Date(data.end);
+    // const newDate = new Date(data.start);
+    // const newDateEnd = new Date(data.end);
 
-    const findOne = await this.findOneDate(data.user, newDate, newDateEnd);
+    // const findOne = await this.findOneDate(data.user, newDate, newDateEnd);
 
-    if (findOne) throw 'Ya hay un evento en esta fecha y hora';
+    // if (findOne) throw 'Ya hay un evento en esta fecha y hora';
 
     return await new this.calendarModel(data).save();
   }
@@ -42,14 +42,14 @@ export class CalendarService {
       if (req.user._id !== idUser)
         throw 'No tiene privilegio de editar este evento';
 
-      const findOneDate = await this.findOneDate(
-        findOne.user,
-        newDate,
-        newDateEnd,
-        findOne._id,
-      );
+      // const findOneDate = await this.findOneDate(
+      //   findOne.user,
+      //   newDate,
+      //   newDateEnd,
+      //   findOne._id,
+      // );
 
-      if (findOneDate) throw 'Ya hay un evento en esta fecha y hora';
+      // if (findOneDate) throw 'Ya hay un evento en esta fecha y hora';
 
       return await this.calendarModel
         .findByIdAndUpdate(id, calendar, { new: true })
@@ -81,7 +81,7 @@ export class CalendarService {
           notes: 1,
           start: 1,
           end: 1,
-          users: { _id: '$user._id', name: '$user.name' },
+          user: { _id: '$user._id', name: '$user.name' },
         },
       },
     ];

@@ -54,8 +54,8 @@ export class UsersController {
       });
   }
 
-  @UseGuards(AuthGuard)
-  @ApiBearerAuth('JWT-authenticate')
+  // @UseGuards(AuthGuard)
+  // @ApiBearerAuth('JWT-authenticate')
   @Get(URLS.listUsers)
   @ApiQuery({ name: 'name', required: false, type: String })
   @ApiQuery({ name: 'email', required: false, type: String })

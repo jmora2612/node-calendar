@@ -30,7 +30,7 @@ export class AuthService {
     });
 
     return {
-      uid: token.user._id,
+      _id: token.user._id,
       name: token.user.name,
       token: token.access_token,
     };
@@ -62,7 +62,7 @@ export class AuthService {
     );
     return {
       token: access_token,
-      uid: decodedToken._id,
+      _id: decodedToken._id,
       name: decodedToken.name,
     };
   };
